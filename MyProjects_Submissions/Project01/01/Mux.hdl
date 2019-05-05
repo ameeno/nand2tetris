@@ -15,9 +15,19 @@ CHIP Mux {
 
     PARTS:
     // Put your code here:
-    Not(in=sel, out=nsel);
-    And(a=a, b=nsel, out=c);
-    And(a=b, b=sel, out=d);
-    Or(a=c, b=d, out=out);
+    // if sel =0 out = a
+    //if sel = 1 out = b
+    // parts i have is and, or , not, xor, nand
+    //Xor(a=a, b=b, out=);
 
+    // if sel = 1 and b = 0 out 0
+
+    // make nsel for future use
+    Not(in=sel, out=nsel);
+    // is a and nsel both 1?
+    And(a=a, b=nsel, out=AndA);
+    // how about sel and b? true
+    And(a=sel, b=b, out=AndB);
+    // output the output of whichever is both true.
+    Or(a=AndA, b=AndB, out=out);
 }

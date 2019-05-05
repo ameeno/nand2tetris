@@ -15,4 +15,12 @@ CHIP DMux {
 
     PARTS:
     // Put your code here:
+
+    // first we reverse the sel for use in future
+    Not(in=sel, out=nsel);
+    // next we see if in is true and so is the sel reversed (out a)
+    And(a=in, b=nsel, out=a);
+    // finally if sel is 1 and in is one we output 1 from b.
+    And(a=in, b=sel, out=b);
+
 }
