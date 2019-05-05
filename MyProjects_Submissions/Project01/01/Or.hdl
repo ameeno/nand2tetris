@@ -15,4 +15,9 @@ CHIP Or {
 
     PARTS:
     // Put your code here:
+    // if a =1 or b = 1 give 1
+    Nand(a=a, b=true, out=outna);
+    Nand(a=b, b=true, out=outnb);
+    Nand(a=outna, b=outnb, out=out);
+
 }
