@@ -43,4 +43,45 @@ CHIP ALU {
 
     PARTS:
    // Put you code here:
+   //zx zero x using mux
+        Mux16(a=x, b=false, sel=zx, out=zx1);
+
+    // nx create a not value for x and mux to choose
+        Not16(in=zx1, out=nx1);
+        Mux16(a=zx1, b=nx1, sel=nx, out=znx1);
+
+        // x done with controls
+
+
+   // zy zero y as above with y
+        Mux16(a=y, b=false, sel=zy, out=zy1);
+    // ny as above with y
+        Not16(in=zy1, out=ny1);
+        Mux16(a=zy1, b=ny1, sel=ny, out=zny1);
+
+        // y done
+
+        // F: x+y
+        And16(a=znx1, b=zny1, out=xyf0);
+        Add16(a=znx1, b=zny1, out=xyf1);
+        
+        // use f as selector to choose and or add
+        Mux16(a=xyf0, b=xyf1, sel=f, out=outf);
+
+        //not not16 on f for no value
+        Not16(in=outf, out=notout);
+        
+        //output combine not as selector for out, use out[15] as ng value (under 0) and compute zr using ors
+        Mux16(a=outf, b=notout, sel=no, out=out, out[15]=ng, out=zrout);
+
+// zr check (Ng in output above) i have created or 16way using 2 8ways
+
+        Or16Way(in=zrout, out=zror);
+        Not(in=zror, out=zr);
+
+
+
+
+
+
 }
