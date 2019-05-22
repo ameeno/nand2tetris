@@ -14,14 +14,12 @@
 // Put your code here.
 
 
-@8192 // count 8192 and store in count.
-D=A
-@count 
-M=D 
 
 (LOOP)
+	@SCREEN
+	D=A
 	@index
-	M=0 // i = 0 used when counter full.
+	M=D //Index is the first location of the screen
 
 (SCANNER) // monitor kbd
 	@KBD
@@ -31,24 +29,17 @@ M=D
 
 (CLEAR) // clear if not pressed
 
- 	@SCREEN
- 	D=A
  	@index
- 	D=D+M
- 	A=D
- 	M=0
-
-	@END // jump to counter
-	0;JEQ
+ 	A=M // Current index to address
+ 	M=0      
+	@END 
+	0;JEQ     // jump past the fill function.
 
 (FILL) // Fill with increment
 
- 	@SCREEN
- 	D=A
  	@index
- 	D=D+M
- 	A=D
- 	M=-1
+ 	A=M      // current index
+ 	M=-1     // fill with -1 representing 11111111
 
 (END)
 
@@ -56,11 +47,11 @@ M=D
 	@index
 	MD=M+1
 
- 	@count
- 	D=D-M
- 	
+ 	@KBD  // grab the address of KBD Which is exactly 8192 ABove SCREEN in our HACK computer.
+ 	D=A-D // Data is KBD Address - Current Index Value.
+
  	@LOOP
- 	D;JGE
+ 	D;JLE // If pixels remain, back to scanner, else loop again.
 	
 	@SCANNER
 	0;JEQ
