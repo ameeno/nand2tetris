@@ -1,0 +1,9 @@
+// Basic hack program.
+
+// Adds up the value of memory units 2 + 3 into register 4.
+@2 	// Select A2
+D=M // Data = Value of M[2]
+@3 // select A3
+D=D+M // data = value of D + M[3]
+@4 // select A[4]
+M=D // Write to M[4] the present value of D (Which is sum of 2 & 3)
