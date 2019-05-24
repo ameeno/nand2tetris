@@ -1,38 +1,26 @@
-// Basic hack program.
-
-// Mult.asm, Multiplies two numbers using just Add.
-// 
-// RAM [2] = RAM[0] * RAM[1]
-// Put the Numbers you want into RAM[0] and RAM[1]
-
-// Output will be in RAM[2]
-
-
-(LOOP)
-	@R1 // Address i
-	D=M // I into memory
-	@i // Load r1 address
-	D=D-M // Data = data - R1
-	@STOP // Stop if greater than 0 (I += R1)
-	D;JLT
-
-	@sum // sum initially 0
-	D=M 
-	@R0     // r0
-	D=D+M // add r0's value to current data
-	@sum  
-	M=D // write this value (old + R0  into data)
-	@i 
-	M=M+1 // increment i
-	@LOOP
-	0;JMP
-
-(STOP)
-	@sum
-	D=M
-	@R2 // write value into R2
-	M=D
-
-(END)
-	@END
-	0;JMP
+0000000000010000
+1110101010001000
+0000000000010001
+1110101010001000
+0000000000010000
+1111110000010000
+0000000000000001
+1111010011010000
+0000000000010100
+1110001100000011
+0000000000010001
+1111110000010000
+0000000000000000
+1111000010010000
+0000000000010001
+1110001100001000
+0000000000010000
+1111110111001000
+0000000000000100
+1110101010000111
+0000000000010001
+1111110000010000
+0000000000000010
+1110001100001000
+0000000000011000
+1110101010000111
