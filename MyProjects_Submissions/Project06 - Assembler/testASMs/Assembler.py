@@ -92,6 +92,7 @@ with open(filename+".hack",'w') as file_hack:
             #linestring=line
             dest='null'
             jump='null'
+            comp='0'
             if ';' in line:
                 comp, sep, jump = line.partition(';')
             if '=' in line:
@@ -104,8 +105,6 @@ with open(filename+".hack",'w') as file_hack:
             dest=dest_table[dest]
             comp=comp_table[comp]
             jump=jump_table[jump]
-                
-
             ##Logic if not @
             ## binary syntax
 #1 1 1 a c1 c2 c3 c4 c5 c6 d1 d2 d3 j1 j2 j3 
