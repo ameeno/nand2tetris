@@ -36,7 +36,6 @@ with open(sys.argv[1], 'r') as file_asm:  # Open File
             else:
                 asm_lines.append(line)  # Add the line to asm_lines
             line_number = line_number+1
-file_asm.close()
 
 # Parser 2 Takes Labels into values
 tmp_lines = []
@@ -92,4 +91,3 @@ with open(filename+".hack", 'w') as file_hack:
 
         # write val to file, whether A or C command.
         file_hack.write(str(val)+"\n")
-file_hack.close()  # save file and exit
