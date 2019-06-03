@@ -43,7 +43,7 @@ file_asm.close()
 tmp_lines = []
 custom_var = 15
 
-# Parser2, convert built in symbols to numbers, scan the ( locations) + populate custom dict, make a next pass.
+# Parser2, convert built in symbols to numbers (custom is aleardy in dict, new variables are incrementally assigned)
 
 for line in asm_lines:
     if line[0] == "@":
@@ -58,7 +58,7 @@ for line in asm_lines:
         else:
             custom_var = custom_var+1
             custom_table[str(line[1:])] = str(custom_var)
-            line = '@'+str(custom_table[line[1:]])
+            line = '@'+str(custom_table[line[1:]]) 
 
     if line:
         tmp_lines.append(line)
@@ -96,12 +96,12 @@ with open(filename+".hack", 'w') as file_hack:
             if '=' in comp:
                 dest, sep, comp = comp.partition('=')  # Dest
 
-            # Using dictionary lookup here instead of switch
+            # Using dictionary lookup here like a java switch/case
             dest = dest_table[dest]
             comp = comp_table[comp]
             jump = jump_table[jump]
 
             val = '111'+comp+dest+jump  # comp command val is populated here
-        # Write val to array
-        file_hack.write(str(val)+"\n")  # write to file.
+
+        file_hack.write(str(val)+"\n")  # write val to file, whether A or C command.
 file_hack.close()
