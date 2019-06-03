@@ -1,70 +1,9 @@
 import sys
-import os
-# 1: Open text file
-# 2: scan line
-# increment line (i)
-# break @ Newline
-# break at //
 
-# why not do <Newline symbol || "//"
-
-# symbol table
+# symbol / custom tables
 symbol_table = {'SP': 0, 'LCL': 1, 'ARG': 2, 'THIS': 3, 'THAT': 4, 'R0': 0, 'R1': 1, 'R2': 2, 'R3': 3, 'R4': 4, 'R5': 5, 'R6': 6,
                 'R7': 7, 'R8': 8, 'R9': 9, 'R10': 10, 'R11': 11, 'R12': 12, 'R13': 13, 'R14': 14, 'R15': 15, 'SCREEN': 16384, 'KBD': 24576}
 custom_table = {}
-
-
-# 1: #1: Open text file
-asm_lines = []
-assembly_line = 0
-number_of_labels = 0
-
-# Parser#1 -- Strip Slashes/White space / scan labels and add labels
-filename = os.path.splitext(sys.argv[1])[0]
-with open(sys.argv[1], 'r') as file_asm:  # Open File
-    for line in file_asm:
-        # Split away everything after double slash
-        line, sep, tail = line.partition('//')
-        # and replace all white spaces and \n
-        line = line.strip('\n').replace(" ", "")
-        if line:  # if not null do:
-            if line[0] == '(':  # Labels go to custom table, line gets nulled (Increment still)
-                custom_table[str(line[1:-1])
-                             ] = str(assembly_line-number_of_labels)
-                line = None
-                number_of_labels = number_of_labels+1  # keep numbers of labels in mind
-            if line:
-                asm_lines.append(line)
-            assembly_line = assembly_line+1
-file_asm.close()
-
-
-# Parser 2 Takes Labels into values
-tmp_lines = []
-custom_var = 15
-
-# Parser2, convert built in symbols to numbers (custom is aleardy in dict, new variables are incrementally assigned)
-
-for line in asm_lines:
-    if line[0] == "@":
-        if str(line[1:]).isdigit():
-            line = line
-
-        elif str(line[1:]) in symbol_table.keys():
-            line = '@'+str(symbol_table[line[1:]])
-
-        elif str(line[1:]) in custom_table.keys():
-            line = '@'+str(custom_table[line[1:]])
-        else:
-            custom_var = custom_var+1
-            custom_table[str(line[1:])] = str(custom_var)
-            line = '@'+str(custom_table[line[1:]]) 
-
-    if line:
-        tmp_lines.append(line)
-
-
-# finally make a hack file
 
 # dicts for binary creation
 dest_table = {'null': '000', 'M': '001', 'D': '010', 'MD': '011',
@@ -76,8 +15,56 @@ jump_table = {'null': '000', 'JGT': '001', 'JEQ': '010', 'JGE': '011',
               'JLT': '100', 'JNE': '101', 'JLE': '110', 'JMP': '111'}
 # End binary dicts
 
+# 1: #1: Open text file
+asm_lines = []
+line_number = 0
+number_of_labels = 0
 
-# Create a hack file to write and convert to binary
+# Parser#1 -- Strip Slashes/White space / scan labels and add labels
+filename = sys.argv[1].strip(".asm")
+with open(sys.argv[1], 'r') as file_asm:  # Open File
+    for line in file_asm:
+        # Split away everything after double slash
+        line, sep, tail = line.partition('//')
+        # and replace all white spaces and \n
+        line = line.strip('\n').replace(" ", "")
+        if line:  # if line not null:
+            if line[0] == '(':  # Labels go to custom table, line gets nulled (Increment still)
+                custom_table[str(line[1:-1])
+                             ] = str(line_number-number_of_labels)
+                number_of_labels = number_of_labels+1  # keep numbers of labels in mind
+            else:
+                asm_lines.append(line)  # Add the line to asm_lines
+            line_number = line_number+1
+file_asm.close()
+
+# Parser 2 Takes Labels into values
+tmp_lines = []
+custom_var = 15
+
+# Parser2, convert built in symbols to numbers (custom is aleardy in dict, new variables are incrementally assigned)
+for line in asm_lines:
+    if line[0] == "@":  # See whats after the A and make a decision:
+        if str(line[1:]).isdigit():
+            pass
+        elif str(line[1:]) in symbol_table.keys():
+            line = '@'+str(symbol_table[line[1:]])
+
+        elif str(line[1:]) in custom_table.keys():
+            line = '@'+str(custom_table[line[1:]])
+        else:
+            # This ads an incrementing value to the custom_var on first instance.
+            custom_var = custom_var+1
+            # Logic dictates, the next time it appears,
+            custom_table[str(line[1:])] = str(custom_var)
+            # we will use the elif above!
+            line = '@'+str(custom_table[line[1:]])
+
+    if line:
+        tmp_lines.append(line)  # Temp list from asm list
+
+
+# Finally Create a hack file to write and convert to binary
 with open(filename+".hack", 'w') as file_hack:
     for line in tmp_lines:
 
@@ -103,5 +90,6 @@ with open(filename+".hack", 'w') as file_hack:
 
             val = '111'+comp+dest+jump  # comp command val is populated here
 
-        file_hack.write(str(val)+"\n")  # write val to file, whether A or C command.
-file_hack.close()
+        # write val to file, whether A or C command.
+        file_hack.write(str(val)+"\n")
+file_hack.close()  # save file and exit

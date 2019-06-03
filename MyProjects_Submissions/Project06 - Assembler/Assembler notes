@@ -1,8 +1,8 @@
-1: Open text file
-2: scan line
-increment line (i)
-break @ Newline
-break at //
+#1: Open text file
+#2: scan line
+#increment line (i)
+#break @ Newline
+#break at //
 
 
-why not do <Newline symbol || "//"
+#why not do <Newline symbol || "//"
