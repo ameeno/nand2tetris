@@ -41,7 +41,7 @@ with open(sys.argv[1], 'r') as file_asm:  # Open File
 tmp_lines = []
 custom_var = 15
 
-# Parser2, convert built in symbols to numbers (custom is aleardy in dict, new variables are incrementally assigned)
+# Parser2, convert built in symbols to numbers (custom is already in dict, new variables are incrementally assigned)
 for line in asm_lines:
     if line[0] == "@":  # See whats after the A and make a decision:
         if str(line[1:]).isdigit():
