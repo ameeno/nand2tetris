@@ -2,6 +2,9 @@
 	"folders": [
 		{
 			"path": "."
+		},
+		{
+			"path": "C:\\Users\\Arun Shah\\Downloads\\complete nand2tetris\\nand2tetris-master\\ex8"
 		}
 	],
 	"settings": {}

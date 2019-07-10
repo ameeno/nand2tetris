@@ -1,22 +1,25 @@
 import os
 
-
 class CodeWriter:
     def __init__(self, output_file_asm):
-        self.filename = output_file_asm.strip(".vm") + ".asm"
-        self.file_asm = open(self.filename, 'w')
+        self.filename = output_file_asm.strip(".vm")
+        self.file_asm = open(self.filename + ".asm", 'w')
         self.counter = 0
+        self.func_counter = 0
         self.return_tags = []
+
+
+    def close(self):
+        #self.file_asm.write("(END)\n@END\n0;JMP\n")
+        for line in self.return_tags:
+            self.file_asm.write(line + "\n")
+        self.file_asm.close()
+        print("All Commands Executed Successfully: Translated file is " + self.file_asm.name)
+
 
     def write_asm_output(self, asm_array):
         for line in asm_array:
             self.file_asm.write(line + "\n")
-
-    def close(self):
-        self.file_asm.write("(END)\n@END\n0;JMP\n")
-        for line in self.return_tags:
-            self.file_asm.write(line + "\n")
-        print("All Commands Executed Successfully: Translated file is " + self.filename)
 
     def write_arithmetic(self, command_arithmetic):
         # for debugging write commands in file
@@ -96,10 +99,10 @@ class CodeWriter:
             index = index + 5
             if command == "pop":
                 asm_translation.append(
-                    "@SP\nAM=M-1\nD=M\n@R" + str(index) + "\nM=D")
+                    "@SP\nAM=M-1\nD=M\n@" + str(index) + "\nM=D")
             else:
                 asm_translation.append(
-                    "@R" + str(index) + "\nD=M\n@SP\nM=M+1\nA=M-1\nM=D")
+                    "@" + str(index) + "\nD=M\n@SP\nM=M+1\nA=M-1\nM=D")
         else:
             asm_translation.append("@" + str(index) + "\nD=A")
             if command == "pop":
@@ -124,3 +127,55 @@ class CodeWriter:
         else:
             asm_translation.append("@" + str(label_name) + "\n0;JMP")
         self.write_asm_output(asm_translation)
+
+
+    def writeInit(self):
+        self.file_asm.write("//writeInit()\n")
+        self.file_asm.write("@256\nD=A\n@SP\nM=D\n")
+        self.write_call("Sys.init", "0")
+
+    def write_function(self, funcName, nArgs):
+        self.file_asm.write("//function " + str(funcName) + " " + str(nArgs) + "\n")
+        self.currentFunc = funcName
+        commandsInitLocals =""
+        if int(nArgs)>0:
+            commandsInitLocals = '@SP\nD=A\nA=M\n'
+            for i in range(int(nArgs)):
+                #commandsInitLocals += '@LCL\nD=M\n@'+str(i)+'\nA=A+D\nM=0\n'
+                commandsInitLocals+= "M=D\nA=A+1\n"
+            commandsInitLocals +="D=A\n@SP\nM=D\n"
+        
+        self.file_asm.write('('+funcName+')\n'+commandsInitLocals)
+
+
+    def write_call(self, funcName, nArgs):
+        self.file_asm.write("//call " + str(funcName) + " " + str(nArgs) + "\n")
+        self.file_asm.write('@'+funcName+"$ret."+str(self.func_counter)+'\nD=A\n@SP\nA=M\nM=D\n@SP\nM=M+1\n'+
+                           '@R1\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n'+
+                           '@R2\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n'+
+                           '@R3\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n'+
+                           '@R4\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n'+
+                           '@'+str(int(nArgs)+5)+'\nD=A\n@R0\nA=M\nAD=A-D\n'+
+                           '@R2\nM=D\n@R0\nD=M\n@R1\nM=D\n'+
+                           '@'+funcName+'\n0;JMP\n'+
+                           '('+funcName+"$ret."+str(self.func_counter)+')\n')
+        self.func_counter+= 1
+
+
+    def write_return(self):
+        self.file_asm.write("//return\n")
+        self.file_asm.write('@R1\nD=M\n@R13\nM=D\n'+
+                           '@5\nA=D-A\nD=M\n@R14\nM=D\n'+
+                           '@SP\nM=M-1\n@ARG\nAD=M\n@R15\nM=D\n' + 
+                           '@SP\nA=M\nD=M\n@R15\nA=M\nM=D\n'+
+                           '@R2\nD=M\n@R0\nM=D+1\n'+
+                           '@R13\nD=M\nD=D-1\n'+
+                           '@R13\nM=D\nA=D\nD=M\n@R4\nM=D\n'+
+                           '@R13\nD=M\nD=D-1\n@R13\nM=D\nA=D\nD=M\n@R3\nM=D\n'+  
+                           '@R13\nD=M\nD=D-1\n@R13\nM=D\nA=D\nD=M\n@R2\nM=D\n'+
+                           '@R13\nD=M\nD=D-1\n@R13\nM=D\nA=D\nD=M\n@R1\nM=D\n'+
+                           '@R14\nA=M\n0;JMP\n')
+                               
+    def set_filename(self,newname):
+        print("Translating of New File: "+str(newname))
+        self.filename=newname.strip(".vm")
