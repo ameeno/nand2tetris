@@ -8,7 +8,7 @@ class Parser:
                 # Split away everything after double slash
                 line, sep, tail = line.partition('//')
                 # strip NewLine
-                line = line.strip().replace('\n',"").replace("\t","")
+                line = line.strip().replace('\n', "").replace("\t", "")
                 if line == "":
                     pass
                 else:

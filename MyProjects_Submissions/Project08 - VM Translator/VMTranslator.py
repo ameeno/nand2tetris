@@ -14,6 +14,13 @@ if "win" in platform.lower():
 # Translator calls parser and stars
 _vm_parser_outputs = []
 _input_arg = sys.argv[1]
+initSwitch = False
+
+try:
+    if sys.argv[2] == "noswitch" or sys.argv[2] == "-n":
+        initSwitch = True
+except:
+    pass
 
 _number_of_files_to_parse = 1
 _filenames_to_parse = []
@@ -42,27 +49,31 @@ if os.path.isdir(_input_arg):
 else:
     CodeW = CodeWriter(_input_arg)
 
-CodeW.writeInit()
+if initSwitch:
+    pass
+else:
+    CodeW.writeInit()
+
 for file in _vm_parser_outputs:
     for line in file:
-        #print(line)
-        line=line.split(" ")
-        if line[0]=="$$NEW_FILE$$": ## changing filename
+        # print(line)
+        line = line.split(" ")
+        if line[0] == "$$NEW_FILE$$":  # changing filename
             CodeW.set_filename(os.path.basename(line[1]))
-        elif line[0]=="goto" or line[0]== "label"  or line[0]=="if-goto":
+        elif line[0] == "goto" or line[0] == "label" or line[0] == "if-goto":
             # print("Label "+line)
             CodeW.write_label(line[0], line[1])
-            
-        elif line[0]=="function":
+
+        elif line[0] == "function":
             CodeW.write_function(line[1], line[2])
-            
-        elif line[0]=="call":
+
+        elif line[0] == "call":
             CodeW.write_call(line[1], line[2])
-            
-        elif line[0]=="return":
+
+        elif line[0] == "return":
             CodeW.write_return()
-            
-        elif line[0]=="push" or line[0]=="pop":
+
+        elif line[0] == "push" or line[0] == "pop":
             # print("PushPop "+line)
             CodeW.write_push_pop(line[0], line[1], line[2])
 
